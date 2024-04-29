@@ -3,6 +3,7 @@ from .forms import CustomUserCreationForm
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth import login, authenticate
 from .models import Account
+from django.contrib import messages
 
 # Create your views here.
 def signup(request):
@@ -20,20 +21,18 @@ def signup(request):
         form = CustomUserCreationForm()
     return render(request, 'signup.html', {'form': form})
 
-def login(request):
+def user_login(request):
     if request.method == 'POST':
-        form = AuthenticationForm(data=request.POST)
-        if form.is_valid():
-            username = form.cleaned_data.get('username')
-            password = form.cleaned_data.get('password')
-            user = authenticate(username=username, password = password)
-            if user is not None:
-                login(request, user)
-                return redirect('signup')
-            else:
-                return redirect('login')
-    else:
-        form = AuthenticationForm()
-    return render(request, 'login.html', {'form': form})
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(request, username=username, password=password)
+        if user is not None:
+            login(request, user)
+            user_role = Account.objects.get(user=user).role
+            request.session['role'] = user_role  # Lưu quyền của người dùng vào session
+            return redirect('category_list')  # Chuyển hướng đến trang shop
+        else:
+            messages.error(request, 'Invalid username or password.')
+    return render(request, 'login.html')
 
 
