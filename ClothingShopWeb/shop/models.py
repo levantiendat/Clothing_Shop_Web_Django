@@ -28,7 +28,7 @@ class Cart(models.Model):
     count = models.IntegerField()
 
     def __str__(self):
-        return self.user.username + self.product.name
+        return self.user.username + "-" + self.product.name + "-" + self.product.price + "-" + str(self.count)
 
 class History(models.Model):
     id = models.AutoField(primary_key=True)

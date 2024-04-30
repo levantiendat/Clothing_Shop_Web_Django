@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Category list</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f4;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+
+        h2 {
+            color: #333;
+            margin-top: 50px;
+        }
+
+        h3 {
+            color: #ffffff;
+        }
+
+        input {
+            width: 30%;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        input[type="submit"] {
+            background-color: #4caf50;
+            color: #fff;
+            cursor: pointer;
+            width: 10%;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            background-color: #333;
+            color: #fff;
+        }
+
+        .navbar button {
+            background-color: transparent;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #333;
+            color: #fff;
+        }
+
+        tr:nth-child(even) {
+            background-color: #fff; /* Màu nền của các hàng chẵn */
+        }
+
+        tr:nth-child(odd) {
+            background-color: #f2f2f2; /* Màu nền của các hàng lẻ */
+        }
+
+        tr:hover {
+            background-color: #ddd; /* Màu nền khi di chuột qua hàng */
+        }
+    </style>
+</head>
+
+<body>
+    <div class="navbar">
+        <button style="font-size: 20px; font-weight: bold;">Cá nhân</button>
+        <button style="font-size: 20px; font-weight: bold;">Danh mục</button>
+        <button style="font-size: 20px; font-weight: bold;">Sản phẩm</button>
+        <button style="font-size: 20px; font-weight: bold;">Lịch sử mua hàng</button>
+        <button style="font-size: 20px; font-weight: bold;">Tìm kiếm</button>
+        <h2>Danh sách danh mục</h2>
+        <button style="font-size: 20px; font-weight: bold;">Đăng xuất</button>
+    </div>
+
+    <form method="get">
+        <input type="hidden" name="update" value="1">
+        <table>
+            <tr>
+                <td style="text-align: right"><label for="ID_Product">Mã mặt hàng:</label></td>
+                <td><input type="text" name="ID_Product" value="" readonly></td>
+            </tr>
+            <tr>
+                <td style="text-align: right"><label for="Product_name">Tên mặt hàng:</label></td>
+                <td><input type="text" name="ID_Product" value="" readonly></td>
+            </tr>
+            <tr>
+                <td style="text-align: right"><label for="Product_num">Số lượng:</label></td>
+                <td><input type="text" name="Product_num" value=""></td>
+            </tr>
+        </table>
+        <input type="submit" name="ok" value="CẬP NHẬP">
+    </form>
+</body>
+
+</html>
