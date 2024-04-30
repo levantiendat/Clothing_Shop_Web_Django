@@ -73,23 +73,27 @@
 </head>
 
 <body>
-    <div class="navbar">
+    <div class="navbar" style="display: flex; align-items: center;">
         <button style="font-size: 20px; font-weight: bold;">Cá nhân</button>
         <button style="font-size: 20px; font-weight: bold;">Danh mục</button>
         <button style="font-size: 20px; font-weight: bold;">Sản phẩm</button>
         <button style="font-size: 20px; font-weight: bold;">Lịch sử mua hàng</button>
         <button style="font-size: 20px; font-weight: bold;">Tìm kiếm</button>
-        <h2>Danh sách danh mục</h2>
+        <h2 style="font-size: 20px; font-weight: bold; color: white; margin: 0;">Welcome, {{ user.name }}</h2>
         <button style="font-size: 20px; font-weight: bold;">Đăng xuất</button>
     </div>
+    
 
     <table>
         <tr>
             <th>Mã loại hàng</th>
             <th>Loại hàng</th>
             <th>Mô tả</th>
+            
             <th></th>
-            <th></th>
+            {% if user.role == 1 %}
+                <th></th>
+            {% endif %}
         </tr>
         {% for category in categories %}
         <tr>
@@ -97,7 +101,9 @@
             <td>{{ category.name }}</td>
             <td>{{ category.decription }}</td>
             <td><button>Xem danh sách</button></td>
-            <td><button>Sửa</button><button>Xóa</button></td>
+            {% if user.role == 1 %}
+                <td><button>Sửa</button><button>Xóa</button></td>
+            {% endif %}
         </tr>
         {% endfor %}
     </table>

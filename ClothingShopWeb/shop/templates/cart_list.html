@@ -23,26 +23,6 @@
             color: #ffffff;
         }
 
-        input {
-            width: 100%;
-            padding: 10px;
-            margin: 8px 0;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        input[type="submit"] {
-            width: 20%;
-            background-color: #4caf50;
-            color: #fff;
-            cursor: pointer;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #45a049;
-        }
-
         .navbar {
             display: flex;
             justify-content: space-between;
@@ -89,27 +69,65 @@
         tr:hover {
             background-color: #ddd; /* Màu nền khi di chuột qua hàng */
         }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        input[type="submit"] {
+            width: 20%;
+            background-color: #4caf50;
+            color: #fff;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+
+        
     </style>
 </head>
 
 <body>
-    <div class="navbar">
+    <div class="navbar" style="display: flex; align-items: center;">
         <button style="font-size: 20px; font-weight: bold;">Cá nhân</button>
         <button style="font-size: 20px; font-weight: bold;">Danh mục</button>
         <button style="font-size: 20px; font-weight: bold;">Sản phẩm</button>
         <button style="font-size: 20px; font-weight: bold;">Lịch sử mua hàng</button>
         <button style="font-size: 20px; font-weight: bold;">Tìm kiếm</button>
-        <h2>Danh sách danh mục</h2>
+        <h2 style="font-size: 20px; font-weight: bold; color: white; margin: 0;">Welcome, {{ user.name }}</h2>
         <button style="font-size: 20px; font-weight: bold;">Đăng xuất</button>
     </div>
-
+    {% load filter %}
+    
     <table>
         <tr>
             <th>Mã loại hàng</th>
             <th>Tên hàng</th>
             <th>Số lượng</th>
             <th>Đơn giá</th>
+            <th>Thành tiền</th>
             <th></th>
+            <th></th>
+        </tr>
+        {% for cart in carts %}
+            <tr>
+                <th>{{ cart.product.id }}</th>
+                <th>{{ cart.product.name }}</th>
+                <th>{{ cart.count }}</th>
+                <th>{{ cart.product.price}}</th>
+                <th>{{ cart.count|mul:cart.product.price }}</th>
+                <td><button style="width: 100%; height: 100%;font-size: 20;background-color: blue;color:white;">Sửa</button></td>
+                <td><button style="width: 100%; height: 100%;font-size: 20;background-color: red;color:white;">Xóa</button></td>
+            </tr>
+        {% endfor %}
     </table>
     <a href="">
         <input type="submit" name="check_order" value="THANH TOÁN">

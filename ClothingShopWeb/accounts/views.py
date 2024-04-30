@@ -28,8 +28,8 @@ def user_login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            user_role = Account.objects.get(user=user).role
-            request.session['role'] = user_role  # Lưu quyền của người dùng vào session
+            username = Account.objects.get(user=user).user.username
+            request.session['user'] = username  # Lưu quyền của người dùng vào session
             return redirect('category_list')  # Chuyển hướng đến trang shop
         else:
             messages.error(request, 'Invalid username or password.')
