@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Category list</title>
+    <title>Product list</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -21,26 +21,6 @@
 
         h3 {
             color: #ffffff;
-        }
-
-        input {
-            width: 50%;
-            padding: 10px;
-            margin: 8px 0;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        input[type="submit"] {
-            background-color: #4caf50;
-            color: #fff;
-            cursor: pointer;
-            width: 10%;
-        }
-
-        input[type="submit"]:hover {
-            background-color: #45a049;
         }
 
         .navbar {
@@ -70,7 +50,7 @@
         th,
         td {
             padding: 10px;
-            text-align: center;
+            text-align: left;
         }
 
         th {
@@ -89,60 +69,44 @@
         tr:hover {
             background-color: #ddd; /* Màu nền khi di chuột qua hàng */
         }
-        
-        button {
-            background-color: #4caf50;
-            color: #fff;
-            cursor: pointer;
-            width: 10%;
-            padding: 10px;
-            margin: 8px 0;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        /* Hover effect for button */
-        button:hover {
-            background-color: #45a049;
-        }
     </style>
 </head>
 
 <body>
-    <div class="navbar">
+    <div class="navbar" style="display: flex; align-items: center;">
         <button style="font-size: 20px; font-weight: bold;">Cá nhân</button>
         <button style="font-size: 20px; font-weight: bold;">Danh mục</button>
         <button style="font-size: 20px; font-weight: bold;">Sản phẩm</button>
         <button style="font-size: 20px; font-weight: bold;">Giỏ hàng</button>
         <button style="font-size: 20px; font-weight: bold;">Lịch sử mua hàng</button>
         <button style="font-size: 20px; font-weight: bold;">Tìm kiếm</button>
-        <h2>Danh sách danh mục</h2>
+        <h2 style="font-size: 20px; font-weight: bold; color: white; margin: 0;">Welcome, {{ user.name }}</h2>
         <button style="font-size: 20px; font-weight: bold;">Đăng xuất</button>
     </div>
+    
 
-    <form method="post" action="{% url 'update_cart_product' %}">
-        {% csrf_token %}
-        <input type="hidden" name="update" value="1">
-        <table>
-            <input type="hidden" name="cart_id" value="{{ cart.id }}">
-            <tr>
-                <td style="text-align: right"><label for="ID_Product">Mã mặt hàng:</label></td>
-                <td><input type="text" name="ID_Product" value="{{ product.id }}" readonly></td>
-            </tr>
-            <tr>
-                <td style="text-align: right"><label for="Product_name">Tên mặt hàng:</label></td>
-                <td><input type="text" name="Product_name" value="{{ product.name }}" readonly></td>
-            </tr>
-            <tr>
-                <td style="text-align: right"><label for="cart_new_count">Số lượng:</label></td>
-                <td><input type="text" name="cart_new_count" value="{{ cart.count }}"></td>
-            </tr>
-        </table>
-        <button>CẬP NHẬT</button>
-        
-    </form>
-
+    <table>
+        <tr>
+            <th>Mã hóa đơn</th>
+            <th>Ngày thanh toán</th>
+            {% if user.role == 1 %}
+                <th>Người thanh toán</th>
+            {% endif %}
+            <th>Số tiền thanh toán</th>
+            
+            
+        </tr>
+        {% for history in histories %}
+        <tr>
+            <td>{{ history.id }}</td>
+            <td>{{ history.date }}</td>
+            {% if user.role == 1 %}
+                <th>{{ history.user.username }}</th>
+            {% endif %}
+            <td>{{ history.total_amount }}</td>
+        </tr>
+        {% endfor %}
+    </table>
 </body>
 
 </html>

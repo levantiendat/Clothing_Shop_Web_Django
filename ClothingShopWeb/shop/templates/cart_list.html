@@ -100,13 +100,13 @@
         <button style="font-size: 20px; font-weight: bold;">Cá nhân</button>
         <button style="font-size: 20px; font-weight: bold;">Danh mục</button>
         <button style="font-size: 20px; font-weight: bold;">Sản phẩm</button>
+        <button style="font-size: 20px; font-weight: bold;">Giỏ hàng</button>
         <button style="font-size: 20px; font-weight: bold;">Lịch sử mua hàng</button>
         <button style="font-size: 20px; font-weight: bold;">Tìm kiếm</button>
         <h2 style="font-size: 20px; font-weight: bold; color: white; margin: 0;">Welcome, {{ user.name }}</h2>
         <button style="font-size: 20px; font-weight: bold;">Đăng xuất</button>
     </div>
     {% load filter %}
-    
     <table>
         <tr>
             <th>Mã loại hàng</th>
@@ -134,10 +134,21 @@
                 <td><button style="width: 100%; height: 100%;font-size: 20;background-color: red;color:white;">Xóa</button></td>
             </tr>
         {% endfor %}
+        <tr>
+            <th></th>
+            <th>Tổng số tiền</th>
+            <th></th>
+            <th></th>
+            <th>{{ total_cart}}</th>
+            <th></th>
+            <th></th>
+        </tr>
     </table>
-    <a href="">
+    <form action="{% url 'checkout_cart' %}" method="post">
+        {% csrf_token %}
         <input type="submit" name="check_order" value="THANH TOÁN">
-    </a>
+    </form>
+    
 </body>
 
 </html>

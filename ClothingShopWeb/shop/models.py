@@ -36,4 +36,4 @@ class History(models.Model):
     date = models.DateTimeField()
     total_amount = models.IntegerField()
     def __str__(self):
-        return self.user.username + self.product.date
+        return f"{self.user.username}-{str(self.id)}"
