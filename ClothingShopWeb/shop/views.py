@@ -58,6 +58,53 @@ def cart_update(request):
     user = Account.objects.get(user__username=username)
     if user.role is None:
         return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
-    cart_id = '1'  # Lấy id của Cart hiện tại
+    cart_id = request.POST.get('cart_id')  # Lấy id của Cart hiện tại
+    cart_id = int(cart_id)
     cart = Cart.objects.filter(id=cart_id)  # Lọc các đối tượng Cart theo id của Cart
-    return render(request, 'cart_update.html', {'cart': cart, 'user': user})
+    product_id = int(cart[0].product.id)
+    product = Product.objects.get(pk=product_id)  # Lấy thông tin sản phẩm từ Cart
+    return render(request, 'cart_update.html', {'cart': cart, 'product': product, 'user': user, 'id': cart_id})
+
+def update_cart_product(request):
+    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    user = Account.objects.get(user__username=username)
+    
+    if request.method == 'POST':
+        cart_id = request.POST.get('cart_id')
+        cart_id = int(cart_id)
+        cart_new_count = request.POST.get('cart_new_count')
+        
+        if(cart_new_count <= 0):
+            messages.error(request, 'Số lượng sản phẩm phải lớn hơn 0!')
+        
+        cart = Cart.objects.get(pk=cart_id)
+        
+        try:
+            cart.count = int(cart_new_count)
+            cart.save()
+            messages.success(request, 'Đã cập nhật số lượng sản phẩm trong giỏ hàng!')
+        except Exception as e:
+            messages.error(request, e)
+    
+    return redirect('cart_list')
+
+def delete_cart_product(request):
+    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    user = Account.objects.get(user__username=username)
+    
+    cart_id = request.POST.get('cart_id')
+    cart = Cart.objects.get(pk=cart_id)
+    
+    try:
+        cart.delete()
+        messages.success(request, 'Đã xóa sản phẩm khỏi giỏ hàng!')
+    except Exception as e:
+        messages.error(request, e)
+        
+    return redirect('cart_list')
+
+def check_out_cart(request):
+    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    user = Account.objects.get(user__username=username)
+    
+    return redirect('product_list')
