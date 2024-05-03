@@ -24,7 +24,7 @@
         }
 
         input {
-            width: 30%;
+            width: 50%;
             padding: 10px;
             margin: 8px 0;
             box-sizing: border-box;
@@ -70,7 +70,7 @@
         th,
         td {
             padding: 10px;
-            text-align: left;
+            text-align: center;
         }
 
         th {
@@ -88,6 +88,23 @@
 
         tr:hover {
             background-color: #ddd; /* Màu nền khi di chuột qua hàng */
+        }
+        
+        button {
+            background-color: #4caf50;
+            color: #fff;
+            cursor: pointer;
+            width: 10%;
+            padding: 10px;
+            margin: 8px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        /* Hover effect for button */
+        button:hover {
+            background-color: #45a049;
         }
     </style>
 </head>
@@ -108,19 +125,26 @@
         <table>
             <tr>
                 <td style="text-align: right"><label for="ID_Product">Mã mặt hàng:</label></td>
-                <td><input type="text" name="ID_Product" value="" readonly></td>
+                <td><input type="text" name="ID_Product" value="{{ product.id }}" readonly></td>
             </tr>
             <tr>
                 <td style="text-align: right"><label for="Product_name">Tên mặt hàng:</label></td>
-                <td><input type="text" name="ID_Product" value="" readonly></td>
+                <td><input type="text" name="ID_Product" value="{{ product.name }}" readonly></td>
             </tr>
             <tr>
                 <td style="text-align: right"><label for="Product_num">Số lượng:</label></td>
-                <td><input type="text" name="Product_num" value=""></td>
+                <td><input type="text" name="Product_num" value="{{ cart.count }}"></td>
             </tr>
         </table>
-        <input type="submit" name="ok" value="CẬP NHẬT">
+        <form action="{% url 'update_cart_product' %}" method="post">
+            {% csrf_token %}
+            <input type="hidden" name="cart_id" value="{{ id }}">
+            <input type="hidden" name="cart_new_count" value="{{ cart.count }}">
+            <button>CẬP NHẬT</button>
+        </form>
+        
     </form>
+
 </body>
 
 </html>
