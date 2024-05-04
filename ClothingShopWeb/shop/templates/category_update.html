@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>History list</title>
+    <title>Add Category</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -122,30 +122,25 @@
             <button type="submit" style="font-size: 30;font-weight: bold;max-width: 100px;max-height: 50px;">Đăng xuất</button>
         </form>
     </div>
-    
 
-    <table>
-        <tr>
-            <th>Mã hóa đơn</th>
-            <th>Ngày thanh toán</th>
-            {% if user.role == 1 %}
-                <th>Người thanh toán</th>
-            {% endif %}
-            <th>Số tiền thanh toán</th>
-            
-            
-        </tr>
-        {% for history in histories %}
-        <tr>
-            <td>{{ history.id }}</td>
-            <td>{{ history.date }}</td>
-            {% if user.role == 1 %}
-                <th>{{ history.user.username }}</th>
-            {% endif %}
-            <td>{{ history.total_amount }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <form method="post" action="{% url 'category_update_accept' %}">
+        {% csrf_token %}
+        <input type="hidden" name="add" value="1">
+        <input type="hidden" name="category_id" value="{{ category.id }}">
+        <table>
+            <tr>
+                <td style="text-align: right"><label for="category_name">Tên danh mục:</label></td>
+                <td><input type="text" name="category_name" value="{{ category.name }}"></td>
+            </tr>
+            <tr>
+                <td style="text-align: right"><label for="decription">Mô tả:</label></td>
+                <td><input type="text" name="decription" style="width: 60%;" value="{{ category.decription }}"></td>
+            </tr>
+        </table>
+        <button class="submit_button">CẬP NHẬT</button>
+        
+    </form>
+
 </body>
 
 </html>

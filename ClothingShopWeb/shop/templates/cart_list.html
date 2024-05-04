@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Category list</title>
+    <title>Cart list</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -12,15 +12,6 @@
             text-align: center;
             margin: 0;
             padding: 0;
-        }
-
-        h2 {
-            color: #333;
-            margin-top: 50px;
-        }
-
-        h3 {
-            color: #ffffff;
         }
 
         .navbar {
@@ -39,6 +30,20 @@
             border: none;
             border-radius: 4px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar button:hover {
+            background-color: #555;
+        }
+
+        h2 {
+            font-size: 20px;
+            font-weight: bold;
+            background-color: #000;
+            color: #f2f2f2;
+            padding: 10px;
+            margin-top: 20px;
         }
 
         table {
@@ -50,7 +55,7 @@
         th,
         td {
             padding: 10px;
-            text-align: left;
+            text-align: center;
         }
 
         th {
@@ -59,52 +64,63 @@
         }
 
         tr:nth-child(even) {
-            background-color: #fff; /* Màu nền của các hàng chẵn */
+            background-color: #fff;
         }
 
         tr:nth-child(odd) {
-            background-color: #f2f2f2; /* Màu nền của các hàng lẻ */
+            background-color: #f2f2f2;
         }
 
         tr:hover {
-            background-color: #ddd; /* Màu nền khi di chuột qua hàng */
+            background-color: #ddd;
         }
 
-        input {
-            width: 100%;
+        /* CSS cho class "submit_button" */
+        .submit_button {
+            width: 20%;
             padding: 10px;
-            margin: 8px 0;
+            margin: 20px auto 8px;
             box-sizing: border-box;
             border: 1px solid #ccc;
             border-radius: 4px;
-        }
-
-        input[type="submit"] {
-            width: 20%;
             background-color: #4caf50;
             color: #fff;
             cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: bold; /* Thêm kiểu chữ in đậm */
         }
 
-        input[type="submit"]:hover {
+        /* Hiệu ứng hover cho class "submit_button" */
+        .submit_button:hover {
             background-color: #45a049;
         }
-
-        
-        
     </style>
 </head>
 
 <body>
-    <div class="navbar" style="display: flex; align-items: center;">
-        <button style="font-size: 20px; font-weight: bold;">Cá nhân</button>
-        <button style="font-size: 20px; font-weight: bold;">Danh mục</button>
-        <button style="font-size: 20px; font-weight: bold;">Sản phẩm</button>
-        <button style="font-size: 20px; font-weight: bold;">Giỏ hàng</button>
-        <button style="font-size: 20px; font-weight: bold;">Lịch sử mua hàng</button>
-        <button style="font-size: 20px; font-weight: bold;">Tìm kiếm</button>
-        <h2 style="font-size: 20px; font-weight: bold; color: white; margin: 0;">Welcome, {{ user.name }}</h2>
-        <button style="font-size: 20px; font-weight: bold;">Đăng xuất</button>
+    <div class="navbar">
+        <form method="GET" action="">
+            <button type="submit" style="font-size: 30;font-weight: bold;max-width: 100px;max-height: 50px;">Cá nhân</button>
+        </form>
+        <form method="GET" action="{% url 'category_list' %}">
+            <button type="submit" style="font-size: 30;font-weight: bold;max-width: 100px;max-height: 50px;">Danh mục</button>
+        </form>
+        <form method="GET" action="{% url 'product_list' %}">
+            <button type="submit" style="font-size: 30;font-weight: bold;max-width: 100px;max-height: 50px;">Sản phẩm</button>
+        </form>
+        <form method="GET" action="{% url 'cart_list' %}">
+            <button type="submit" style="font-size: 30;font-weight: bold;max-width: 100px;max-height: 50px;">Giỏ hàng</button>
+        </form>
+        <form method="GET" action="{% url 'history_list' %}">
+            <button type="submit" style="font-size: 30;font-weight: bold;max-width: 100px;max-height: 50px;">Lịch sử mua hàng</button>
+        </form>
+        <form method="GET" action="">
+            <button type="submit" style="font-size: 30;font-weight: bold;max-width: 100px;max-height: 50px;">Tìm kiếm</button>
+        </form>
+        <h2 style="font-size: 20;font-weight: bold;">Welcome, {{user.user.username}}</h2>
+        <form method="GET" action="{% url 'login' %}">
+            <button type="submit" style="font-size: 30;font-weight: bold;max-width: 100px;max-height: 50px;">Đăng xuất</button>
+        </form>
     </div>
     {% load filter %}
     <table>
@@ -146,7 +162,7 @@
     </table>
     <form action="{% url 'checkout_cart' %}" method="post">
         {% csrf_token %}
-        <input type="submit" name="check_order" value="THANH TOÁN">
+        <input type="submit" name="check_order" class="submit_button" value="THANH TOÁN">
     </form>
     
 </body>

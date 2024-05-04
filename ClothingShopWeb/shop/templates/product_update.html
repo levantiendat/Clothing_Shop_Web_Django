@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>History list</title>
+    <title>Add Product</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -122,30 +122,39 @@
             <button type="submit" style="font-size: 30;font-weight: bold;max-width: 100px;max-height: 50px;">Đăng xuất</button>
         </form>
     </div>
-    
 
-    <table>
-        <tr>
-            <th>Mã hóa đơn</th>
-            <th>Ngày thanh toán</th>
-            {% if user.role == 1 %}
-                <th>Người thanh toán</th>
-            {% endif %}
-            <th>Số tiền thanh toán</th>
-            
-            
-        </tr>
-        {% for history in histories %}
-        <tr>
-            <td>{{ history.id }}</td>
-            <td>{{ history.date }}</td>
-            {% if user.role == 1 %}
-                <th>{{ history.user.username }}</th>
-            {% endif %}
-            <td>{{ history.total_amount }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+    <form method="post" action="{% url 'product_update_accept' %}">
+        {% csrf_token %}
+        <input type="hidden" name="add" value="1">
+        <input type="hidden" name="product_id" value="{{ product.id }}">
+        <table>
+            <tr>
+                <td style="text-align: right"><label for="category">Loại hàng:</label></td>
+                <td>
+                    <select name="category_id" id="category_id">
+                        {% for category in categories %}
+                            <option value="{{ category.id }}" {% if category.id == product.category.id %} selected {% endif %}>{{ category.name }}</option>
+                        {% endfor %}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: right"><label for="product_name">Tên mặt hàng:</label></td>
+                <td><input type="text" name="product_name" value="{{ product.name }}"></td>
+            </tr>
+            <tr>
+                <td style="text-align: right"><label for="product_price">Giá:</label></td>
+                <td><input type="number" name="product_price" value="{{ product.price }}"></td>
+            </tr>
+            <tr>
+                <td style="text-align: right"><label for="stock_number">Số lượng:</label></td>
+                <td><input type="number" name="stock_number" value="{{ product.stock_number }}"></td>
+            </tr>
+        </table>
+        <button class="submit_button">CẬP NHẬT</button>
+        
+    </form>
+
 </body>
 
 </html>

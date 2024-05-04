@@ -53,10 +53,113 @@ def add_category(request):
             return render(request, 'add_category.html', {'user': user})
     else:
         return render(request, 'add_category.html', {'user': user})
+    
+def category_update(request, category_id):
+    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    user = Account.objects.get(user__username=username)
+    if user.role is None:
+        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    
+    category = Category.objects.get(id = category_id)
+    return render(request, 'category_update.html', {'user': user, 'category': category})
+def category_update_accept(request):
+    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    user = Account.objects.get(user__username=username)
+    if user.role is None:
+        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if request.method == 'POST':
+        category_id = request.POST.get('category_id')
+        name = request.POST.get('category_name')
+        decription = request.POST.get('decription')
+        try:
+            category = Category.objects.get(id = category_id)
+            category.name = name
+            category.decription = decription
+            category.save()
+            return redirect('category_list')
+        except Exception as e:
+            print(e)
+            messages.error(request, 'Thêm thất bại!')
+            category = Category.objects.get(id = category_id)
+            return render(request, 'category_update.html', {'user': user, 'category': category})
+
+def category_delete(request, category_id):
+    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    user = Account.objects.get(user__username=username)
+    if user.role is None:
+        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    Category.objects.get(id = category_id).delete()
+    return redirect('category_list')
 def add_product(request):
-    return 0
+    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    user = Account.objects.get(user__username=username)
+    user1 = user.user
+    categories = Category.objects.all()
+    if user.role is None:
+        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if request.method == 'POST':
+        try:
+            category_id = request.POST.get('category_id')
+            
+            name = request.POST.get('product_name')
+            price = request.POST.get('product_price')
+            stock_number = request.POST.get('stock_number')
+            category_id = int(category_id)
+            category = Category.objects.get(id = category_id)
+            product = Product.objects.create(name=name, category=category, price=price, stock_number=stock_number)
+        
+            return redirect('product_list')
+        except Exception as e:
+            print(e)
+            messages.error(request, 'Cập nhật thất bại!')
+            return render(request, 'add_product.html', {'user': user, 'categories': categories})
+    else:
+        return render(request, 'add_product.html', {'user': user, 'categories': categories})
 
+def product_update(request, product_id):
+    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    user = Account.objects.get(user__username=username)
+    if user.role is None:
+        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    categories = Category.objects.all()
+    product = Product.objects.get(id = product_id)
+    return render(request, 'product_update.html', {'user': user,'categories':categories, 'product': product})
+def product_update_accept(request):
+    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    user = Account.objects.get(user__username=username)
+    if user.role is None:
+        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if request.method == 'POST':
+        product_id = request.POST.get('product_id')
+        category_id = request.POST.get('category_id')
+        name = request.POST.get('product_name')
+        price = request.POST.get('product_price')
+        stock_number = request.POST.get('stock_number')
+        category_id = int(category_id)
+        category = Category.objects.get(id = category_id)
+        
+        try:
+            product = Product.objects.get(id = product_id)
+            product.category = category
+            product.name = name
+            product.price = price
+            product.stock_number = stock_number
+            product.save()
+            return redirect('product_list')
+        except Exception as e:
+            print(e)
+            messages.error(request, 'Cập nhật thất bại!')
+            categories = Category.objects.all()
+            product = Product.objects.get(id = product_id)
+            return render(request, 'product_update.html', {'user': user,'categories':categories, 'product': product})
 
+def product_delete(request, product_id):
+    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    user = Account.objects.get(user__username=username)
+    if user.role is None:
+        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    Product.objects.get(id = product_id).delete()
+    return redirect('product_list')
 
 def add_cart(request):
     username = request.session.get("user", None)
