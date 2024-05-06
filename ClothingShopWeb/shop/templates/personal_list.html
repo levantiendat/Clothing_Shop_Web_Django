@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cart Update</title>
+    <title>Personal list</title>
     <style>
         body {
             font-family: 'Arial', sans-serif;
@@ -122,28 +122,37 @@
             <button type="submit" style="font-size: 30;font-weight: bold;max-width: 100px;max-height: 50px;">Đăng xuất</button>
         </form>
     </div>
-
-    <form method="post" action="{% url 'update_cart_product' %}">
-        {% csrf_token %}
-        <input type="hidden" name="update" value="1">
-        <input type="hidden" name="cart_id" value="{{ cart.id }}">
-        <table>
-            <tr>
-                <td><label for="ID_Product">Mã mặt hàng:</label></td>
-                <td><input type="text" name="ID_Product" value="{{ product.id }}" readonly></td>
-            </tr>
-            <tr>
-                <td><label for="Product_name">Tên mặt hàng:</label></td>
-                <td><input type="text" name="Product_name" value="{{ product.name }}" readonly></td>
-            </tr>
-            <tr>
-                <td><label for="cart_new_count">Số lượng:</label></td>
-                <td><input type="text" name="cart_new_count" value="{{ cart.count }}"></td>
-            </tr>
-        </table>
-        <button type="submit" class="submit_button">CẬP NHẬT</button>
-    </form>
-
+    
+    <table>
+        <tr>
+            <th>UserName</th>
+            <th>Name</th>
+            <th>Phone number</th>
+            <th>Role</th>
+            <th></th>
+            {% if user.role == 1 %}
+                <th></th>
+            {% endif %}
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.user.username }}</td>
+            <td>{{ user.name }}</td>
+            <td>{{ user.phone_number }}</td>
+            <td>{{ user.role }}</td>
+            <td>
+                <a href="{% url 'personal_list_update_view' user.user.username %}">
+                    <button style="background-color: #eeff00;">Update User</button>
+                </a>
+            </td>
+            <td>
+                <a href="{% url 'personal_delete' user.user.username %}">
+                    <button style="background-color: #ff0000;color:#f2f2f2;">Delete User</button>
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
 </body>
 
 </html>

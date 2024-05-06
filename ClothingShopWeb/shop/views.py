@@ -6,6 +6,23 @@ from accounts.models import Account
 import locale
 from django.utils import timezone
 import pytz
+import re
+from django.shortcuts import reverse
+
+def personal_info(request):
+    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    user = Account.objects.get(user__username=username)  # Lấy thông tin của người dùng từ database
+    if user.role is None:
+        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    return render(request, 'personal.html', {'user': user})  # Trả về trang personal.html với thông tin của người dùng
+
+def personal_list(request):
+    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    user = Account.objects.get(user__username=username)  # Lấy thông tin của người dùng từ database
+    if user.role is None:
+        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    users = Account.objects.all()
+    return render(request, 'personal_list.html', {'users': users, 'user': user})
 
 def category_list(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
@@ -62,6 +79,7 @@ def category_update(request, category_id):
     
     category = Category.objects.get(id = category_id)
     return render(request, 'category_update.html', {'user': user, 'category': category})
+
 def category_update_accept(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
     user = Account.objects.get(user__username=username)
@@ -96,6 +114,7 @@ def category_delete(request, category_id):
     products.delete()
     category.delete()
     return redirect('category_list')
+
 def add_product(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
     user = Account.objects.get(user__username=username)
@@ -106,7 +125,6 @@ def add_product(request):
     if request.method == 'POST':
         try:
             category_id = request.POST.get('category_id')
-            
             name = request.POST.get('product_name')
             price = request.POST.get('product_price')
             stock_number = request.POST.get('stock_number')
@@ -130,6 +148,64 @@ def product_update(request, product_id):
     categories = Category.objects.all()
     product = Product.objects.get(id = product_id)
     return render(request, 'product_update.html', {'user': user,'categories':categories, 'product': product})
+
+def Check_Phone(phone):
+    if not re.match(r'^[0-9]{10}$', phone):
+        return False
+    return True
+
+def update_personal_info(request):
+    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    user = Account.objects.get(user__username=username)  # Lấy thông tin của người dùng từ database
+    if user.role is None:
+        return redirect("login")
+    if request.method == 'POST':  # Nếu request là POST
+        Name = request.POST.get('Name')  # Lấy thông tin first_name từ request
+        Phone = request.POST.get('Phone') # Lấy thông tin phone_number từ request
+        role = request.POST.get('Role') # Lấy thông tin role từ request
+        user_id = request.POST.get('user_id')  # Lấy thông tin user_id từ request
+        try:
+            u = Account.objects.get(user__username=user_id)  # Lấy thông tin user từ database
+            u.name = Name
+            u.phone_number = Phone
+            u.role = role
+            u.save()  # Lưu thông tin mới vào database
+            messages.success(request, 'Cập nhật thông tin thành công!')  # Thông báo cập nhật thành công
+        except Exception as e:
+            print(e)
+            messages.error(request, e)  # Thông báo cập nhật thất bại
+    return redirect('Personal')  # Chuyển hướng đến trang personal.html
+
+def update_personal_list_info(request, user_id):
+    if request.method == 'POST':  # Nếu request là POST
+        Name = request.POST.get('Name')  # Lấy thông tin first_name từ request
+        Phone = request.POST.get('Phone') # Lấy thông tin phone_number từ request
+        role = request.POST.get('Role') # Lấy thông tin role từ request
+        try:
+            u = Account.objects.get(user__username=user_id)  # Lấy thông tin user từ database
+            u.name = Name
+            u.phone_number = Phone
+            u.role = role
+            u.save()  # Lưu thông tin mới vào database
+            messages.success(request, 'Cập nhật thông tin thành công!')  # Thông báo cập nhật thành công
+        except Exception as e:
+            print(e)
+            messages.error(request, e)  # Thông báo cập nhật thất bại
+    return redirect(reverse('personal_list_update_view', kwargs={'user_id': user_id})) 
+
+def personal_list_update_view(request, user_id):
+    user = Account.objects.get(user__username=user_id)  # Lấy thông tin của người dùng từ database
+    return render(request, 'personal_update.html', {'user': user})  # Trả về trang personal.html với thông tin của người dùng
+
+def delete_user(request, user_id):
+    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    user = Account.objects.get(user__username=username)  # Lấy thông tin của người dùng từ database
+    if user.role is None:
+        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    u = Account.objects.get(user__username=user_id)  # Lấy thông tin user từ database
+    u.delete()  # Xóa thông tin user khỏi database
+    return redirect('personal_list')  # Chuyển hướng đến trang personal_list.html
+
 def product_update_accept(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
     user = Account.objects.get(user__username=username)
@@ -143,7 +219,6 @@ def product_update_accept(request):
         stock_number = request.POST.get('stock_number')
         category_id = int(category_id)
         category = Category.objects.get(id = category_id)
-        
         try:
             product = Product.objects.get(id = product_id)
             product.category = category
