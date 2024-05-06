@@ -88,7 +88,13 @@ def category_delete(request, category_id):
     user = Account.objects.get(user__username=username)
     if user.role is None:
         return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
-    Category.objects.get(id = category_id).delete()
+    category = Category.objects.get(id = category_id)
+    products = Product.objects.filter(category = category)
+    for product in products:
+        carts = Cart.objects.filter(product = product)
+        carts.delete()
+    products.delete()
+    category.delete()
     return redirect('category_list')
 def add_product(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
@@ -158,7 +164,10 @@ def product_delete(request, product_id):
     user = Account.objects.get(user__username=username)
     if user.role is None:
         return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
-    Product.objects.get(id = product_id).delete()
+    product =  Product.objects.get(id = product_id)
+    carts = Cart.objects.filter(product = product)
+    carts.delete()
+    product.delete()
     return redirect('product_list')
 
 def add_cart(request):
