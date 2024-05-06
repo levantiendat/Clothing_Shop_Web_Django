@@ -238,13 +238,17 @@ def update_cart_product(request):
             Cart.objects.filter(pk = cart_id).delete()
         else:
             cart = Cart.objects.get(pk=cart_id)
-        
-            try:
-                cart.count = int(cart_new_count)
-                cart.save()
-                messages.success(request, 'Đã cập nhật số lượng sản phẩm trong giỏ hàng!')
-            except Exception as e:
-                messages.error(request, e)
+            product = Product.objects.get(id = cart.product.id)
+            if(cart_new_count > product.stock_number):
+                return redirect('cart_list')
+            else:
+                
+                try:
+                    cart.count = int(cart_new_count)
+                    cart.save()
+                    messages.success(request, 'Đã cập nhật số lượng sản phẩm trong giỏ hàng!')
+                except Exception as e:
+                    messages.error(request, e)
     
     return redirect('cart_list')
 
@@ -252,14 +256,16 @@ def delete_cart_product(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
     user = Account.objects.get(user__username=username)
     
-    cart_id = request.POST.get('cart_id')
-    cart = Cart.objects.get(pk=cart_id)
+    if request.method == 'POST':
+        cart_id = request.POST.get('cart_id')
+        product_id = request.POST.get('product_id')
+        cart_item = Cart.objects.get(pk=cart_id, product__id=product_id)
     
-    try:
-        cart.delete()
-        messages.success(request, 'Đã xóa sản phẩm khỏi giỏ hàng!')
-    except Exception as e:
-        messages.error(request, e)
+        try:
+            cart_item.delete()
+            messages.success(request, 'Đã xóa sản phẩm khỏi giỏ hàng!')
+        except Exception as e:
+            messages.error(request, e)
         
     return redirect('cart_list')
 
