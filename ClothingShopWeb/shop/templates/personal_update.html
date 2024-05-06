@@ -6,6 +6,37 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal</title>
     <style>
+        .navbar input::placeholder {
+            color: #fff;
+        }
+        .navbar select {
+            background-color: transparent;
+            color: #fff;
+            font-weight: bold;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .navbar select option {
+            background-color: #333;
+            color: #fff;
+            font-weight: bold;
+        }
+        .navbar input {
+            background-color: transparent;
+            color: #fff;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .navbar input::placeholder {
+            color: #fff;
+        }
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f4;
@@ -170,9 +201,9 @@
                     </div>
                 {% endif %}
                 <div class="form-button">
-                    <button type="submit" class="btn btn-primary" name="Submit" value="SuaThongTin" id="SuaThongTin">Sửa thông tin</button>
-                    <button type="button" class="btn btn-primary" style="width:40%;" onclick="Cancel()">Hủy</button>
-                    <button type="button" class="btn btn-primary" style="width:40%;" onclick="Back()">Quay về</button>
+                    <button type="submit" name="Submit" value="SuaThongTin" id="SuaThongTin">Sửa thông tin</button>
+                    <button type="button" style="width:40%;" onclick="Cancel()">Hủy</button>
+                    <button type="button" style="width:40%;" onclick="Back()">Quay về</button>
                 </div>
             </form>
         </div>
