@@ -121,10 +121,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            width: 25%;
+            width: 35%;
         }
         .form-button button{
-            margin-top:30px;
+            margin: 10px;
             font-size: 20px;
             padding: 10px;
             border-radius: 10px;
@@ -133,45 +133,16 @@
             color: #120b0b;
             font-weight: bold;
             cursor: pointer;
+            width: 300px;
         }
     </style>
 </head>
 
 <body>
-    <div class="navbar">
-        <form method="GET" action="{% url 'Personal' %}">
-            <button type="submit" style="font-size: 30;font-weight: bold;max-width: 100px;max-height: 50px;">Cá nhân</button>
-        </form>
-        <form method="GET" action="{% url 'category_list' %}">
-            <button type="submit" style="font-size: 30;font-weight: bold;max-width: 100px;max-height: 50px;">Danh mục</button>
-        </form>
-        <form method="GET" action="{% url 'product_list' %}">
-            <button type="submit" style="font-size: 30;font-weight: bold;max-width: 100px;max-height: 50px;">Sản phẩm</button>
-        </form>
-        <form method="GET" action="{% url 'cart_list' %}">
-            <button type="submit" style="font-size: 30;font-weight: bold;max-width: 100px;max-height: 50px;">Giỏ hàng</button>
-        </form>
-        <form method="GET" action="{% url 'history_list' %}">
-            <button type="submit" style="font-size: 30;font-weight: bold;max-width: 100px;max-height: 50px;">Lịch sử mua hàng</button>
-        </form>
-        <form method="GET" action="">
-            <button type="submit" style="font-size: 30;font-weight: bold;max-width: 100px;max-height: 50px;">Tìm kiếm</button>
-        </form>
-        <h2 style="font-size: 20;font-weight: bold;">Welcome, {{user.user.username}}</h2>
-        <form method="GET" action="{% url 'login' %}">
-            <button type="submit" style="font-size: 30;font-weight: bold;max-width: 100px;max-height: 50px;">Đăng xuất</button>
-        </form>
-    </div>
-    {% if user.role == 1 %}
-    <form action="{% url 'personal_list' %}" method="post" style="text-align: left;margin-top: 10px;">
-        {% csrf_token %}
-        <input type="submit" name="personal_list" value="Quản lí người dùng" style="background-color: #007bff; color: white; font-size: 20px;">
-    </form>
-    {% endif %}
     <div>
         <h1 style="margin-top: 50px;">Personal Detail</h1>
         <div>
-            <form action="{% url 'update_personal_info' %}" accept-charset="UTF-8" style="font-size: 20px;" method="post" class="form-group">
+            <form action="{% url 'update_personal_list_info' user.user.username%}" accept-charset="UTF-8" style="font-size: 20px;" method="post" class="form-group">
                 {% csrf_token %}
                 <input type="hidden" name="user_id" value="{{user.user.username}}">
                 <div class="form-input">
@@ -189,15 +160,9 @@
                 <div id="Phone_help" style="width:50%;text-align:left;color:red;"></div>
                 <div class="form-input">
                     <label for="Role" class="form-label" style="font-weight:bold; margin:0;">Role</label>
-                    {% if user.role == 1 %}
                     <input type="text"
                         id="Role" name="Role"
                         value="{{user.role}}" style="border: none;outline: none;font-size: 20px; text-align:right;">
-                    {% else %}
-                    <input type="text"
-                        id="Role" name="Role"
-                        value="{{user.role}}" style="border: none;outline: none;font-size: 20px; text-align:right;" readonly>
-                    {% endif %}
                 </div>
                 {% if messages %}
                     <div class="message">
@@ -207,6 +172,7 @@
                 <div class="form-button">
                     <button type="submit" class="btn btn-primary" name="Submit" value="SuaThongTin" id="SuaThongTin">Sửa thông tin</button>
                     <button type="button" class="btn btn-primary" style="width:40%;" onclick="Cancel()">Hủy</button>
+                    <button type="button" class="btn btn-primary" style="width:40%;" onclick="Back()">Quay về</button>
                 </div>
             </form>
         </div>
@@ -216,6 +182,9 @@
             function Cancel(){
                 Phone.value = '{{user.phone_number}}';
                 Name.value = '{{user.name}}';
+            }
+            function Back(){
+                window.location.href = "{% url 'personal_list' %}";
             }
             function Check_Phone(phone){
                 if(phone.match("^[0-9]{10}$")){
