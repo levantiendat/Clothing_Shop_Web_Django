@@ -1,11 +1,14 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
+from django.utils.safestring import mark_safe
+from django.http import HttpResponseRedirect
 from .models import Category, Product, Cart, History
 from accounts.models import Account
 import locale
 from django.utils import timezone
 import pytz
+from django.db.models.functions import Lower
 import re
 from django.shortcuts import reverse
 
@@ -40,7 +43,40 @@ def product_list(request):
     products = Product.objects.all()
     for product in products:
         product.price = "{:,.0f}".format(product.price)
+    messages.success(request, 'Tải danh sách sản phẩm thành công!')  # Thông báo tải danh sách sản phẩm thành công
     return render(request, 'product_list.html', {'products': products, 'user': user})
+
+def check_price(price):
+    if not re.match(r'^[0-9]+$', price):
+        return False
+    return True
+
+def product_list_search(request):
+    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    user = Account.objects.get(user__username=username)
+    products = None
+    searchType = request.GET.get('searchType')
+    searchQuery = request.GET.get('searchQuery')
+    query_safe = mark_safe(searchQuery)
+    try:
+        if not searchQuery:
+            return render(request, 'product_list_search.html', {'user': user, "searchQuery": query_safe, 'message': 'Tên sản phẩm không được để trống!'})
+        if searchType == 'productName':
+            products = [product for product in Product.objects.all() if searchQuery.lower() in product.name.lower()]
+        elif searchType == 'productPrice':
+            searchQuery = re.sub(r'\D', '', searchQuery)
+            print(f"searchQuery: {searchQuery}")
+            if not check_price(searchQuery):
+                return render(request, 'product_list_search.html', {'user': user, "searchQuery": query_safe, 'message': 'Giá sản phẩm không hợp lệ!'})
+            searchQuery = re.sub(r'\D', '', searchQuery)
+            searchQuery = int(searchQuery)
+            products = Product.objects.filter(price = searchQuery)
+        if products is not None:
+            return render(request, 'product_list_search.html', {'products': products, 'user': user, "searchQuery": query_safe, 'message': 'Tìm kiếm thành công!'})
+    except Exception as e:
+        print(e)
+        return redirect('product_list_search', {'user': user, "searchQuery": query_safe, 'message': 'Tìm kiếm thất bại!'})
+    return redirect('product_list_search', {'user': user, "searchQuery": query_safe, 'message': 'Tìm kiếm thất bại!'})
 
 def product_list_category(request, category_id):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
@@ -149,6 +185,15 @@ def product_update(request, product_id):
     product = Product.objects.get(id = product_id)
     return render(request, 'product_update.html', {'user': user,'categories':categories, 'product': product})
 
+def product_search_update(request, product_id):
+    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    user = Account.objects.get(user__username=username)
+    if user.role is None:
+        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    categories = Category.objects.all()
+    product = Product.objects.get(id = product_id)
+    return render(request, 'product_list_search_update.html', {'user': user,'categories':categories, 'product': product})
+
 def Check_Phone(phone):
     if not re.match(r'^[0-9]{10}$', phone):
         return False
@@ -233,6 +278,36 @@ def product_update_accept(request):
             categories = Category.objects.all()
             product = Product.objects.get(id = product_id)
             return render(request, 'product_update.html', {'user': user,'categories':categories, 'product': product})
+        
+def product_list_search_update_accept(request):
+    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    user = Account.objects.get(user__username=username)
+    if user.role is None:
+        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if request.method == 'POST':
+        product_id = request.POST.get('product_id')
+        category_id = request.POST.get('category_id')
+        name = request.POST.get('product_name')
+        name_prev = request.POST.get('product_name')
+        price = request.POST.get('product_price')
+        stock_number = request.POST.get('stock_number')
+        category_id = int(category_id)
+        category = Category.objects.get(id = category_id)
+        try:
+            product = Product.objects.get(id = product_id)
+            product.category = category
+            product.name = name
+            product.price = price
+            product.stock_number = stock_number
+            product.save()
+            return HttpResponseRedirect('/shop/product_list_search/?searchType=productName&searchQuery={}'.format(name_prev))
+        except Exception as e:
+            print(e)
+            messages.error(request, 'Cập nhật thất bại!')
+            categories = Category.objects.all()
+            product = Product.objects.get(id = product_id)
+            return render(request, 'product_list_search_update.html', {'user': user,'categories':categories, 'product': product})
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 def product_delete(request, product_id):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
@@ -245,11 +320,21 @@ def product_delete(request, product_id):
     product.delete()
     return redirect('product_list')
 
+def product_search_delete(request, product_id):
+    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    user = Account.objects.get(user__username=username)
+    if user.role is None:
+        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    product =  Product.objects.get(id = product_id)
+    carts = Cart.objects.filter(product = product)
+    carts.delete()
+    product.delete()
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
+
 def add_cart(request):
     username = request.session.get("user", None)
     user = Account.objects.get(user__username=username)
     user1 = user.user
-    
     if request.method == 'POST':
         product_id = request.POST.get('product_id')
         product_id = int(product_id)
@@ -271,6 +356,31 @@ def add_cart(request):
                     cart_item = Cart.objects.create(user=user1, product=product, count = 1)
                     messages.success(request, 'Sản phẩm đã được thêm vào giỏ hàng!')
     return redirect('product_list')
+
+def add_cart_product_search(request):
+    username = request.session.get("user", None)
+    user = Account.objects.get(user__username=username)
+    user1 = user.user
+    if request.method == 'POST':
+        product_id = request.POST.get('product_id')
+        product_id = int(product_id)
+        
+        if product_id:
+            product = Product.objects.get(pk=product_id)
+            cart_counts = Cart.objects.filter(product=product)
+            count = 0
+            for cart_count in cart_counts:
+                count+=cart_count.count
+            if count < product.stock_number:
+                try:
+                    cart_item = Cart.objects.get(user=user1, product=product)
+                    cart_item.count += 1
+                    cart_item.save()
+                    messages.success(request, f'Đã tăng số lượng thành {0} vào giỏ hàng!'.format(cart_item.count))
+                except Cart.DoesNotExist:
+                    cart_item = Cart.objects.create(user=user1, product=product, count = 1)
+                    messages.success(request, 'Sản phẩm đã được thêm vào giỏ hàng!')
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 def cart_list(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
