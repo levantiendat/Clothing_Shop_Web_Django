@@ -11,32 +11,36 @@ from django.shortcuts import reverse
 
 def personal_info(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
+        return redirect("login")
     user = Account.objects.get(user__username=username)  # Lấy thông tin của người dùng từ database
-    if user.role is None:
-        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
     return render(request, 'personal.html', {'user': user})  # Trả về trang personal.html với thông tin của người dùng
 
 def personal_list(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
+        return redirect("login")
     user = Account.objects.get(user__username=username)  # Lấy thông tin của người dùng từ database
-    if user.role is None:
-        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
     users = Account.objects.all()
     return render(request, 'personal_list.html', {'users': users, 'user': user})
 
 def category_list(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
+        return redirect("login")
     user = Account.objects.get(user__username=username)
-    if user.role is None:
-        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
     categories = Category.objects.all()
     return render(request, 'category_list.html', {'categories': categories, 'user': user})
 
 def product_list(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
+        return redirect("login")
     user = Account.objects.get(user__username=username)
-    if user.role is None:
-        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
     products = Product.objects.all()
     for product in products:
         product.price = "{:,.0f}".format(product.price)
@@ -44,9 +48,11 @@ def product_list(request):
 
 def product_list_category(request, category_id):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
+        return redirect("login")
     user = Account.objects.get(user__username=username)
-    if user.role is None:
-        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    
     category = Category.objects.get(id = category_id)
     products = Product.objects.filter(category = category)
     for product in products:
@@ -55,10 +61,12 @@ def product_list_category(request, category_id):
 
 def add_category(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
+        return redirect("login")
     user = Account.objects.get(user__username=username)
     user1 = user.user
-    if user.role is None:
-        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+
     if request.method == 'POST':
         name = request.POST.get('category_name')
         decription = request.POST.get('decription')
@@ -73,18 +81,21 @@ def add_category(request):
     
 def category_update(request, category_id):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
+        return redirect("login")
     user = Account.objects.get(user__username=username)
-    if user.role is None:
-        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
     
     category = Category.objects.get(id = category_id)
     return render(request, 'category_update.html', {'user': user, 'category': category})
 
 def category_update_accept(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
+        return redirect("login")
     user = Account.objects.get(user__username=username)
-    if user.role is None:
-        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+
     if request.method == 'POST':
         category_id = request.POST.get('category_id')
         name = request.POST.get('category_name')
@@ -103,9 +114,11 @@ def category_update_accept(request):
 
 def category_delete(request, category_id):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
+        return redirect("login")
     user = Account.objects.get(user__username=username)
-    if user.role is None:
-        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    
     category = Category.objects.get(id = category_id)
     products = Product.objects.filter(category = category)
     for product in products:
@@ -117,11 +130,13 @@ def category_delete(request, category_id):
 
 def add_product(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
+        return redirect("login")
     user = Account.objects.get(user__username=username)
     user1 = user.user
     categories = Category.objects.all()
-    if user.role is None:
-        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+
     if request.method == 'POST':
         try:
             category_id = request.POST.get('category_id')
@@ -142,9 +157,11 @@ def add_product(request):
 
 def product_update(request, product_id):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
+        return redirect("login")
     user = Account.objects.get(user__username=username)
-    if user.role is None:
-        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+
     categories = Category.objects.all()
     product = Product.objects.get(id = product_id)
     return render(request, 'product_update.html', {'user': user,'categories':categories, 'product': product})
@@ -156,9 +173,11 @@ def Check_Phone(phone):
 
 def update_personal_info(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
-    user = Account.objects.get(user__username=username)  # Lấy thông tin của người dùng từ database
-    if user.role is None:
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
         return redirect("login")
+    user = Account.objects.get(user__username=username)  # Lấy thông tin của người dùng từ database
+
     if request.method == 'POST':  # Nếu request là POST
         Name = request.POST.get('Name')  # Lấy thông tin first_name từ request
         Phone = request.POST.get('Phone') # Lấy thông tin phone_number từ request
@@ -199,18 +218,22 @@ def personal_list_update_view(request, user_id):
 
 def delete_user(request, user_id):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
+        return redirect("login")
     user = Account.objects.get(user__username=username)  # Lấy thông tin của người dùng từ database
-    if user.role is None:
-        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+
     u = Account.objects.get(user__username=user_id)  # Lấy thông tin user từ database
     u.delete()  # Xóa thông tin user khỏi database
     return redirect('personal_list')  # Chuyển hướng đến trang personal_list.html
 
 def product_update_accept(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
+        return redirect("login")
     user = Account.objects.get(user__username=username)
-    if user.role is None:
-        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+
     if request.method == 'POST':
         product_id = request.POST.get('product_id')
         category_id = request.POST.get('category_id')
@@ -236,9 +259,11 @@ def product_update_accept(request):
 
 def product_delete(request, product_id):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
+        return redirect("login")
     user = Account.objects.get(user__username=username)
-    if user.role is None:
-        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+
     product =  Product.objects.get(id = product_id)
     carts = Cart.objects.filter(product = product)
     carts.delete()
@@ -247,6 +272,9 @@ def product_delete(request, product_id):
 
 def add_cart(request):
     username = request.session.get("user", None)
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
+        return redirect("login")
     user = Account.objects.get(user__username=username)
     user1 = user.user
     
@@ -274,6 +302,9 @@ def add_cart(request):
 
 def cart_list(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
+        return redirect("login")
     user = Account.objects.get(user__username=username)
     user1 = user.user
     if user.role is None:
@@ -286,9 +317,10 @@ def cart_list(request):
 
 def cart_update(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
+        return redirect("login")
     user = Account.objects.get(user__username=username)
-    if user.role is None:
-        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
     cart_id = request.POST.get('cart_id')  # Lấy id của Cart hiện tại
     cart_id = int(cart_id)
     cart = Cart.objects.filter(id=cart_id)  # Lọc các đối tượng Cart theo id của Cart
@@ -299,6 +331,9 @@ def cart_update(request):
 
 def update_cart_product(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
+        return redirect("login")
     user = Account.objects.get(user__username=username)
     
     if request.method == 'POST':
@@ -329,6 +364,9 @@ def update_cart_product(request):
 
 def delete_cart_product(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
+        return redirect("login")
     user = Account.objects.get(user__username=username)
     
     if request.method == 'POST':
@@ -346,11 +384,12 @@ def delete_cart_product(request):
 
 def checkout_cart(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
+        return redirect("login")
     user = Account.objects.get(user__username=username)
     user1 = user.user
 
-    if user.role is None:
-        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
     carts = Cart.objects.filter(user=user1)  # Lọc các đối tượng Cart theo username của người dùng
     total_cart = 0
     for cart in carts:
@@ -373,10 +412,12 @@ def checkout_cart(request):
 
 def history_list(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
+    # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+    if username is None:
+        return redirect("login")
     user = Account.objects.get(user__username=username)
     user1 = user.user
-    if user.role is None:
-        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
+
     if user.role == 1:
         histories = History.objects.all()
         
