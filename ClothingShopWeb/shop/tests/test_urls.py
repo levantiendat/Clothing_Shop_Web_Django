@@ -5,7 +5,8 @@ from shop.views import cart_update, add_cart, update_cart_product, delete_cart_p
 from shop.views import add_category, category_update, category_update_accept, category_delete
 from shop.views import add_product, product_update_accept, product_delete, product_update, product_list_category
 from shop.views import personal_info, update_personal_info, delete_user, personal_list_update_view, update_personal_list_info
-class TestUrls(SimpleTestCase):
+
+class TestShopUrls(SimpleTestCase):
     
     def test_category_list_url_resolves(self):
         url = reverse('category_list')

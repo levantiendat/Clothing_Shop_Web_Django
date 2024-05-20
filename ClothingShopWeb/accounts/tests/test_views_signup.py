@@ -3,7 +3,7 @@ from django.urls import reverse
 from accounts.models import User, Account
 import json
 
-class TestViews(TestCase):
+class TestSignupViews(TestCase):
     
     def test_signup_POST(self): # đăng nhập thành công
         client = Client()

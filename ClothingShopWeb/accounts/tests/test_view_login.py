@@ -3,7 +3,7 @@ from django.urls import reverse
 from accounts.models import User, Account
 import json
 
-class TestViews(TestCase):
+class TestLoginViews(TestCase):
     
     def setUp(self):
         # Create a test user

@@ -2,7 +2,7 @@ from django.test import SimpleTestCase
 from django.urls import reverse, resolve
 from accounts.views import signup, user_login
 
-class TestUrls(SimpleTestCase):
+class TestAccountUrls(SimpleTestCase):
     
     
     def test_signup_url_resolves(self):
