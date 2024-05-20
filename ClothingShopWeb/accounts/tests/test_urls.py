@@ -4,7 +4,6 @@ from accounts.views import signup, user_login
 
 class TestAccountUrls(SimpleTestCase):
     
-    
     def test_signup_url_resolves(self):
         url = reverse('signup')
         self.assertEqual(resolve(url).func, signup)

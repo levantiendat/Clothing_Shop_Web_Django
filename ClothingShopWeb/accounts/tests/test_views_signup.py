@@ -3,7 +3,7 @@ from django.urls import reverse
 from accounts.models import User, Account
 import json
 
-class TestSignupViews(TestCase):
+class Test_Signup_Views(TestCase):
     
     def test_signup_POST(self): # đăng nhập thành công
         client = Client()
@@ -214,30 +214,26 @@ class TestSignupViews(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'signup.html')
         
-    def test_signup_POST_fail_user_exits(self): # người dùng đã tồn tại
+    def test_signup_POST_fail_invalid_username(self): # userame không hợp lệ
         client = Client()
         response = client.post(reverse('signup'), {
-            'username': 'testuser',
+            'username': 'testuser~',
             'name': 'testname',
-            'email': '',
+            'email': 'test@gmail.com',
             'phone_number': '0123456789',
             'password1': 'testpassword',
             'password2': 'testpassword',
             'role': 0
         })
         
-        self.assertEqual(response.status_code, 302)
-        self.assertEqual(User.objects.first().username, 'testuser')
-        self.assertTrue(User.objects.first().check_password('testpassword'))
-        self.assertEqual(User.objects.first().email, '')
-        self.assertEqual(Account.objects.first().name, 'testname')
-        self.assertEqual(Account.objects.first().phone_number, '0123456789')
-        self.assertEqual(Account.objects.first().role, 0)
-
-        self.assertEqual(response.url, '/accounts/login/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'signup.html')
         
-        client2 = Client()
-        response = client2.post(reverse('signup'), {
+    def test_signup_POST_fail_user_exits(self): # người dùng đã tồn tại
+        User.objects.create_user(username='testuser', password='testpassword')
+        
+        client1 = Client()
+        response1 = client1.post(reverse('signup'), {
             'username': 'testuser',
             'name': 'testname1',
             'email': 'test@gmail.com',
@@ -247,7 +243,7 @@ class TestSignupViews(TestCase):
             'role': 0
         })
         
-        self.assertEqual(response.status_code, 200)
-        self.assertTemplateUsed(response, 'signup.html')
+        self.assertEqual(response1.status_code, 200)
+        self.assertTemplateUsed(response1, 'signup.html')
 
 # py manage.py test accounts
