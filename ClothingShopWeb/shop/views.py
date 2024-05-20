@@ -1,14 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
-from django.utils.safestring import mark_safe
-from django.http import HttpResponseRedirect
 from .models import Category, Product, Cart, History
 from accounts.models import Account
 import locale
 from django.utils import timezone
 import pytz
-from django.db.models.functions import Lower
 import re
 from django.shortcuts import reverse
 
@@ -45,38 +42,6 @@ def product_list(request):
         product.price = "{:,.0f}".format(product.price)
     return render(request, 'product_list.html', {'products': products, 'user': user})
 
-def check_price(price):
-    if not re.match(r'^[0-9]+$', price):
-        return False
-    return True
-
-def product_list_search(request):
-    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
-    user = Account.objects.get(user__username=username)
-    products = None
-    searchType = request.GET.get('searchType')
-    searchQuery = request.GET.get('searchQuery')
-    query_safe = mark_safe(searchQuery)
-    try:
-        if not searchQuery:
-            return render(request, 'product_list_search.html', {'user': user, "searchQuery": query_safe, 'message': 'Tên sản phẩm không được để trống!'})
-        if searchType == 'productName':
-            products = [product for product in Product.objects.all() if searchQuery.lower() in product.name.lower()]
-        elif searchType == 'productPrice':
-            searchQuery = re.sub(r'\D', '', searchQuery)
-            print(f"searchQuery: {searchQuery}")
-            if not check_price(searchQuery):
-                return render(request, 'product_list_search.html', {'user': user, "searchQuery": query_safe, 'message': 'Giá sản phẩm không hợp lệ!'})
-            searchQuery = re.sub(r'\D', '', searchQuery)
-            searchQuery = int(searchQuery)
-            products = Product.objects.filter(price = searchQuery)
-        if products is not None:
-            return render(request, 'product_list_search.html', {'products': products, 'user': user, "searchQuery": query_safe, 'message': 'Tìm kiếm thành công!'})
-    except Exception as e:
-        print(e)
-        return redirect('product_list_search', {'user': user, "searchQuery": query_safe, 'message': 'Tìm kiếm thất bại!'})
-    return redirect('product_list_search', {'user': user, "searchQuery": query_safe, 'message': 'Tìm kiếm thất bại!'})
-
 def product_list_category(request, category_id):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
     user = Account.objects.get(user__username=username)
@@ -101,6 +66,7 @@ def add_category(request):
             category = Category.objects.create(name=name, decription=decription)
             return redirect('category_list')
         except:
+            messages.error(request, 'Thêm thất bại!')
             return render(request, 'add_category.html', {'user': user})
     else:
         return render(request, 'add_category.html', {'user': user})
@@ -131,6 +97,7 @@ def category_update_accept(request):
             return redirect('category_list')
         except Exception as e:
             print(e)
+            messages.error(request, 'Thêm thất bại!')
             category = Category.objects.get(id = category_id)
             return render(request, 'category_update.html', {'user': user, 'category': category})
 
@@ -164,9 +131,11 @@ def add_product(request):
             category_id = int(category_id)
             category = Category.objects.get(id = category_id)
             product = Product.objects.create(name=name, category=category, price=price, stock_number=stock_number)
+        
             return redirect('product_list')
         except Exception as e:
             print(e)
+            messages.error(request, 'Cập nhật thất bại!')
             return render(request, 'add_product.html', {'user': user, 'categories': categories})
     else:
         return render(request, 'add_product.html', {'user': user, 'categories': categories})
@@ -179,15 +148,6 @@ def product_update(request, product_id):
     categories = Category.objects.all()
     product = Product.objects.get(id = product_id)
     return render(request, 'product_update.html', {'user': user,'categories':categories, 'product': product})
-
-def product_search_update(request, product_id):
-    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
-    user = Account.objects.get(user__username=username)
-    if user.role is None:
-        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
-    categories = Category.objects.all()
-    product = Product.objects.get(id = product_id)
-    return render(request, 'product_list_search_update.html', {'user': user,'categories':categories, 'product': product})
 
 def Check_Phone(phone):
     if not re.match(r'^[0-9]{10}$', phone):
@@ -210,8 +170,10 @@ def update_personal_info(request):
             u.phone_number = Phone
             u.role = role
             u.save()  # Lưu thông tin mới vào database
+            messages.success(request, 'Cập nhật thông tin thành công!')  # Thông báo cập nhật thành công
         except Exception as e:
             print(e)
+            messages.error(request, e)  # Thông báo cập nhật thất bại
     return redirect('Personal')  # Chuyển hướng đến trang personal.html
 
 def update_personal_list_info(request, user_id):
@@ -225,6 +187,7 @@ def update_personal_list_info(request, user_id):
             u.phone_number = Phone
             u.role = role
             u.save()  # Lưu thông tin mới vào database
+            messages.success(request, 'Cập nhật thông tin thành công!')  # Thông báo cập nhật thành công
         except Exception as e:
             print(e)
             messages.error(request, e)  # Thông báo cập nhật thất bại
@@ -266,38 +229,10 @@ def product_update_accept(request):
             return redirect('product_list')
         except Exception as e:
             print(e)
+            messages.error(request, 'Cập nhật thất bại!')
             categories = Category.objects.all()
             product = Product.objects.get(id = product_id)
             return render(request, 'product_update.html', {'user': user,'categories':categories, 'product': product})
-        
-def product_list_search_update_accept(request):
-    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
-    user = Account.objects.get(user__username=username)
-    if user.role is None:
-        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
-    if request.method == 'POST':
-        product_id = request.POST.get('product_id')
-        category_id = request.POST.get('category_id')
-        name = request.POST.get('product_name')
-        name_prev = request.POST.get('product_name')
-        price = request.POST.get('product_price')
-        stock_number = request.POST.get('stock_number')
-        category_id = int(category_id)
-        category = Category.objects.get(id = category_id)
-        try:
-            product = Product.objects.get(id = product_id)
-            product.category = category
-            product.name = name
-            product.price = price
-            product.stock_number = stock_number
-            product.save()
-            return HttpResponseRedirect('/shop/product_list_search/?searchType=productName&searchQuery={}'.format(name_prev))
-        except Exception as e:
-            print(e)
-            categories = Category.objects.all()
-            product = Product.objects.get(id = product_id)
-            return render(request, 'product_list_search_update.html', {'user': user,'categories':categories, 'product': product})
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 def product_delete(request, product_id):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
@@ -310,21 +245,11 @@ def product_delete(request, product_id):
     product.delete()
     return redirect('product_list')
 
-def product_search_delete(request, product_id):
-    username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
-    user = Account.objects.get(user__username=username)
-    if user.role is None:
-        return redirect("login")  # Chuyển hướng đến trang đăng nhập nếu không có quyền truy cập
-    product =  Product.objects.get(id = product_id)
-    carts = Cart.objects.filter(product = product)
-    carts.delete()
-    product.delete()
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
-
 def add_cart(request):
     username = request.session.get("user", None)
     user = Account.objects.get(user__username=username)
     user1 = user.user
+    
     if request.method == 'POST':
         product_id = request.POST.get('product_id')
         product_id = int(product_id)
@@ -341,32 +266,11 @@ def add_cart(request):
                     cart_item = Cart.objects.get(user=user1, product=product)
                     cart_item.count += 1
                     cart_item.save()
+                    messages.success(request, f'Đã tăng số lượng thành {0} vào giỏ hàng!'.format(cart_item.count))
                 except Cart.DoesNotExist:
                     cart_item = Cart.objects.create(user=user1, product=product, count = 1)
+                    messages.success(request, 'Sản phẩm đã được thêm vào giỏ hàng!')
     return redirect('product_list')
-
-def add_cart_product_search(request):
-    username = request.session.get("user", None)
-    user = Account.objects.get(user__username=username)
-    user1 = user.user
-    if request.method == 'POST':
-        product_id = request.POST.get('product_id')
-        product_id = int(product_id)
-        
-        if product_id:
-            product = Product.objects.get(pk=product_id)
-            cart_counts = Cart.objects.filter(product=product)
-            count = 0
-            for cart_count in cart_counts:
-                count+=cart_count.count
-            if count < product.stock_number:
-                try:
-                    cart_item = Cart.objects.get(user=user1, product=product)
-                    cart_item.count += 1
-                    cart_item.save()
-                except Cart.DoesNotExist:
-                    cart_item = Cart.objects.create(user=user1, product=product, count = 1)
-    return HttpResponseRedirect(request.META.get('HTTP_REFERER', '/'))
 
 def cart_list(request):
     username = request.session.get("user", None)  # Lấy thông tin của người dùng từ session
@@ -377,12 +281,7 @@ def cart_list(request):
     carts = Cart.objects.filter(user=user1)  # Lọc các đối tượng Cart theo username của người dùng
     total_cart = 0
     for cart in carts:
-        if cart.count <= cart.product.stock_number:
-            total_cart +=cart.count*cart.product.price
-        else:
-            cart.count = cart.product.stock_number
-            total_cart +=cart.count*cart.product.price
-            cart.save()
+        total_cart +=cart.count*cart.product.price
     return render(request, 'cart_list.html', {'carts': carts, 'user': user, 'total_cart': total_cart})
 
 def cart_update(request):
@@ -409,10 +308,9 @@ def update_cart_product(request):
         cart_new_count = int(cart_new_count)
         
         if(cart_new_count < 0):
-            redirect('cart_list')
+            messages.error(request, 'Số lượng sản phẩm phải lớn hơn 0!')
         elif(cart_new_count == 0):
             Cart.objects.filter(pk = cart_id).delete()
-            redirect('cart_list')
         else:
             cart = Cart.objects.get(pk=cart_id)
             product = Product.objects.get(id = cart.product.id)
@@ -423,6 +321,7 @@ def update_cart_product(request):
                 try:
                     cart.count = int(cart_new_count)
                     cart.save()
+                    messages.success(request, 'Đã cập nhật số lượng sản phẩm trong giỏ hàng!')
                 except Exception as e:
                     messages.error(request, e)
     
@@ -439,6 +338,7 @@ def delete_cart_product(request):
     
         try:
             cart_item.delete()
+            messages.success(request, 'Đã xóa sản phẩm khỏi giỏ hàng!')
         except Exception as e:
             messages.error(request, e)
         
@@ -454,10 +354,7 @@ def checkout_cart(request):
     carts = Cart.objects.filter(user=user1)  # Lọc các đối tượng Cart theo username của người dùng
     total_cart = 0
     for cart in carts:
-        if cart.count <= cart.product.stock_number:
-            total_cart +=cart.count*cart.product.price
-        else:
-            return redirect('cart_list')
+        total_cart +=cart.count*cart.product.price
     current_time_vn = timezone.localtime(timezone.now(), pytz.timezone('Asia/Ho_Chi_Minh'))
 
     try:
@@ -468,8 +365,10 @@ def checkout_cart(request):
             product.stock_number -= cart.count
             product.save()
         Cart.objects.filter(user=user1).delete()
+        messages.success(request, 'Hóa đơn đã được thanh toán!')
     except Exception as e:
         print(e)
+        messages.error(request, 'Thanh toán thất bại!')
     return redirect('cart_list')
 
 def history_list(request):

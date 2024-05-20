@@ -6,37 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Product list</title>
     <style>
-        .navbar input::placeholder {
-            color: #fff;
-        }
-        .navbar select {
-            background-color: transparent;
-            color: #fff;
-            font-weight: bold;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-
-        .navbar select option {
-            background-color: #333;
-            color: #fff;
-            font-weight: bold;
-        }
-        .navbar input {
-            background-color: transparent;
-            color: #fff;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-        }
-        .navbar input::placeholder {
-            color: #fff;
-        }
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f4f4f4;
@@ -145,12 +114,7 @@
         <form method="GET" action="{% url 'history_list' %}">
             <button type="submit" style="font-size: 30;font-weight: bold;max-width: 100px;max-height: 50px;">Lịch sử mua hàng</button>
         </form>
-        <form method="GET" action="{% url 'product_list_search'%}">
-            <select name="searchType">
-                <option value="productName" >Tìm kiếm theo tên sản phẩm</option>
-                <option value="productPrice">Tìm kiếm theo giá sản phẩm</option>
-            </select>
-            <input type="text" name="searchQuery" placeholder="Nhập từ khóa tìm kiếm..." style="font-size: 30;font-weight: bold;max-height: 50px;">
+        <form method="GET" action="">
             <button type="submit" style="font-size: 30;font-weight: bold;max-width: 100px;max-height: 50px;">Tìm kiếm</button>
         </form>
         <h2 style="font-size: 20;font-weight: bold;">Welcome, {{user.user.username}}</h2>
@@ -178,33 +142,33 @@
             {% endif %}
         </tr>
         {% for product in products %}
-            <tr>
-                <td>{{ product.id }}</td>
-                <td>{{ product.name }}</td>
-                <td>{{ product.category.name }}</td>
-                <td>{{ product.stock_number }}</td>
-                <td>{{ product.price}}</td>
+        <tr>
+            <td>{{ product.id }}</td>
+            <td>{{ product.name }}</td>
+            <td>{{ product.category.name }}</td>
+            <td>{{ product.stock_number }}</td>
+            <td>{{ product.price}}</td>
+            <td>
+                <form action="{% url 'add_cart' %}" method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="product_id" value="{{ product.id }}">
+                    <button type="submit" style="background-color: #00ff00; color: #381590;">Thêm vào giỏ hàng</button>
+                </form>
+            </td>
+            
+            {% if user.role == 1 %}
                 <td>
-                    <form action="{% url 'add_cart' %}" method="post">
-                        {% csrf_token %}
-                        <input type="hidden" name="product_id" value="{{ product.id }}">
-                        <button type="submit" style="background-color: #00ff00; color: #381590;">Thêm vào giỏ hàng</button>
-                    </form>
+                    <a href="{% url 'product_update' product.id %}">
+                        <button style="background-color: #eeff00;">Sửa</button>
+                    </a>
+                    <a href="{% url 'product_delete' product.id %}">
+                        <button style="background-color: #ff0000;color:#f2f2f2;">Xóa</button>
+                    </a>
                 </td>
-                {% if user.role == 1 %}
-                    <td>
-                        <a href="{% url 'product_update' product.id %}">
-                            <button style="background-color: #eeff00;">Sửa</button>
-                        </a>
-                        <a href="{% url 'product_delete' product.id %}">
-                            <button style="background-color: #ff0000;color:#f2f2f2;">Xóa</button>
-                        </a>
-                    </td>
-                {% endif %}
-            </tr>
+            {% endif %}
+        </tr>
         {% endfor %}
     </table>
-    
 </body>
 
 </html>

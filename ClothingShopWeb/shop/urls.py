@@ -1,15 +1,12 @@
 from django.urls import path
 from . import views
+
 urlpatterns = [
     path('category_list/', views.category_list, name='category_list'),
     path('product_list/', views.product_list, name='product_list'),
-    path('product_list_search/', views.product_list_search, name='product_list_search'),
-    path('product_search_update/<int:product_id>/', views.product_search_update, name='product_search_update'),
-    path('product_search_delete/<int:product_id>/', views.product_search_delete, name='product_search_delete'),
     path('cart_list/', views.cart_list, name='cart_list'),
     path('cart_update/', views.cart_update, name='cart_update'),
     path('add_cart/', views.add_cart, name='add_cart'),
-    path('add_cart_product_search/', views.add_cart_product_search, name='add_cart_product_search'),
     path('update_cart_product/', views.update_cart_product, name='update_cart_product'),
     path('delete_cart_product/', views.delete_cart_product, name='delete_cart_product'),
     path('checkout_cart/', views.checkout_cart, name='checkout_cart'),
@@ -22,7 +19,6 @@ urlpatterns = [
     path('category_delete/<int:category_id>/', views.category_delete, name='category_delete'),
     path('product_update/<int:product_id>/', views.product_update, name='product_update'),
     path('product_update_accept/', views.product_update_accept, name='product_update_accept'),
-    path('product_list_search_update_accept/', views.product_list_search_update_accept, name='product_list_search_update_accept'),
     path('product_delete/<int:product_id>/', views.product_delete, name='product_delete'),
     path('personal_info/', views.personal_info, name='Personal'),
     path('update_personal_info/', views.update_personal_info, name='update_personal_info'),
