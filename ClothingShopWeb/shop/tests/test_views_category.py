@@ -317,5 +317,5 @@ class CategoryDeleteViewTest(TestCase):
         self.assertFalse(Product.objects.filter(id=self.product.id).exists())
         self.assertFalse(Cart.objects.filter(id=self.cart.id).exists())
 
-   
+
 # py manage.py test shop

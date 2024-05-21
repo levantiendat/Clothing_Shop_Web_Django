@@ -63,5 +63,5 @@ class TestShopModels(TestCase):
         self.assertEqual(self.cart.product, self.product)
        
         self.assertEqual(self.history.user, self.user)
-    
+ 
 # py manage.py test shop

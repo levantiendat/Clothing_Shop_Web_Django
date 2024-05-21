@@ -103,6 +103,5 @@ class TestShopUrls(SimpleTestCase):
     def test_update_personal_list_info_url_resolves(self):
         url = reverse('update_personal_list_info', args=['id'])
         self.assertEqual(resolve(url).func, update_personal_list_info)
-        
-       
+    
 # py manage.py test shop
