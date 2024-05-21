@@ -508,7 +508,7 @@ class ProductUpdateAcceptViewTest(TestCase):
         # Kiểm tra sản phẩm không được cập nhật
         self.product.refresh_from_db()
         self.assertNotEqual(self.product.stock_number, -20)
- 
+
 class ProductDeleteTestCase(TestCase):
     # Tạo user và account tương ứng
     def setUp(self):
@@ -557,5 +557,5 @@ class ProductDeleteTestCase(TestCase):
         # Kiểm tra sản phẩm đã bị xóa
         self.assertFalse(Product.objects.filter(id=self.product.id).exists())
         self.assertFalse(Cart.objects.filter(id=self.cart.id).exists())
-
+ 
 # py manage.py test shop
