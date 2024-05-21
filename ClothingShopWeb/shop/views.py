@@ -71,6 +71,8 @@ def add_category(request):
         name = request.POST.get('category_name')
         decription = request.POST.get('decription')
         try:
+            if name == '':
+                raise Exception('Tên danh mục không được để trống!')
             category = Category.objects.create(name=name, decription=decription)
             return redirect('category_list')
         except:
@@ -102,6 +104,8 @@ def category_update_accept(request):
         decription = request.POST.get('decription')
         try:
             category = Category.objects.get(id = category_id)
+            if name == '':
+                raise Exception('Tên danh mục không được để trống!')
             category.name = name
             category.decription = decription
             category.save()
@@ -145,6 +149,12 @@ def add_product(request):
             stock_number = request.POST.get('stock_number')
             category_id = int(category_id)
             category = Category.objects.get(id = category_id)
+            if name == '':
+                raise Exception('Tên sản phẩm không được để trống!')
+            if int(price) < 0:
+                raise Exception('Giá sản phẩm không được nhỏ hơn 0!')
+            if int(stock_number) < 0:
+                raise Exception('Số lượng sản phẩm không được nhỏ hơn 0!')
             product = Product.objects.create(name=name, category=category, price=price, stock_number=stock_number)
         
             return redirect('product_list')
@@ -243,6 +253,12 @@ def product_update_accept(request):
         category_id = int(category_id)
         category = Category.objects.get(id = category_id)
         try:
+            if name == '':
+                raise Exception('Tên sản phẩm không được để trống!')
+            if int(price) < 0:
+                raise Exception('Giá sản phẩm không được nhỏ hơn 0!')
+            if int(stock_number) < 0:
+                raise Exception('Số lượng sản phẩm không được nhỏ hơn 0!')
             product = Product.objects.get(id = product_id)
             product.category = category
             product.name = name
