@@ -39,7 +39,8 @@ class PersonalInfoViewTest(TestCase):
         
         self.assertEqual(response.status_code, 302)  # Chuyển hướng đến trang đăng nhập
         self.assertRedirects(response, self.login_url)
-        
+
+# py manage.py test shop.tests.test_views_personal.PersonalInfoViewTest   
 class PersonalListViewTest(TestCase):
     def setUp(self):
         # Tạo user và account tương ứng
@@ -89,12 +90,8 @@ class PersonalListViewTest(TestCase):
         self.assertEqual(response.status_code, 302)  # Chuyển hướng đến trang đăng nhập
         self.assertRedirects(response, self.login_url)
 
+# py manage.py test shop.tests.test_views_personal.PersonalListViewTest
 class CheckPhoneViewTest(TestCase):
-
-    def test_valid_phone_number(self):
-        # Kiểm tra với số điện thoại hợp lệ
-        phone_number = '1234567890'
-        self.assertTrue(Check_Phone(phone_number))
 
     def test_invalid_phone_number(self):
         # Kiểm tra với số điện thoại không hợp lệ (ít hơn 10 chữ số)
@@ -121,7 +118,7 @@ class CheckPhoneViewTest(TestCase):
         phone_number = ''
         self.assertFalse(Check_Phone(phone_number))
 
-    def test_edge_cases(self):
+    def test_valid_phone_number(self):
 
         # Kiểm tra với số điện thoại chính xác 10 chữ số
         phone_number = '1234567890'
@@ -135,6 +132,7 @@ class CheckPhoneViewTest(TestCase):
         phone_number = '123-456-7890'
         self.assertFalse(Check_Phone(phone_number))
 
+# py manage.py test shop.tests.test_views_personal.CheckPhoneViewTest
 class UpdatePersonalInfoViewTest(TestCase):
     def setUp(self):
         # Tạo user và account tương ứng
@@ -214,6 +212,7 @@ class UpdatePersonalInfoViewTest(TestCase):
         self.assertNotEqual(self.account.phone_number, '9876543210')
         self.assertNotEqual(self.account.role, 0)
 
+# py manage.py test shop.tests.test_views_personal.UpdatePersonalInfoViewTest
 class UpdatePersonalListInfoViewTest(TestCase):
     def setUp(self):
         # Tạo user và account tương ứng
@@ -272,7 +271,7 @@ class UpdatePersonalListInfoViewTest(TestCase):
         with self.assertRaises(Exception):
             with mock.patch('shop.models.Account.save', side_effect=Exception('Database error')):
                 response = self.client.post(self.personal_list_update_view_url, data)
-                # kiểm tra có chuyển hướng về Personal không
+                # kiểm tra có chuyển hướng về personal_list_update_view không
                 self.assertEqual(response.status_code, 302)
                 self.assertRedirects(response, self.personal_list_update_view_url)
 
@@ -282,6 +281,7 @@ class UpdatePersonalListInfoViewTest(TestCase):
         self.assertNotEqual(self.account.phone_number, '9876543210')
         self.assertNotEqual(self.account.role, 0)
 
+# py manage.py test shop.tests.test_views_personal.UpdatePersonalListInfoViewTest
 class PersonalListUpdateViewViewTest(TestCase):
     def setUp(self):
         # Tạo user và account tương ứng
@@ -311,6 +311,7 @@ class PersonalListUpdateViewViewTest(TestCase):
         self.assertIn('user', response.context)
         self.assertEqual(response.context['user'], self.account)
 
+# py manage.py test shop.tests.test_views_personal.PersonalListUpdateViewViewTest
 class PersonalDeleteViewTest(TestCase):
     def setUp(self):
         # Tạo user và account tương ứng
@@ -353,4 +354,6 @@ class PersonalDeleteViewTest(TestCase):
         # Kiểm tra tài khoản đã bị xóa khỏi database
         self.assertFalse(Account.objects.filter(user=self.user2).exists())
 
-# py manage.py test shop
+# py manage.py test shop.tests.test_views_personal.PersonalDeleteViewTest
+
+# py manage.py test shop.tests.test_views_personal

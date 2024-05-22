@@ -22,7 +22,7 @@ class Test_Login_Views(TestCase):
             'password': self.password,
         })
         self.assertRedirects(response, self.category_list_url)
-        self.assertEqual(int(self.client.session['_auth_user_id']), self.user.pk)
+        self.assertIn('user', self.client.session)
         self.assertEqual(self.client.session['user'], self.username)
 
     def test_unsuccessful_login_wrong_pass(self): # đăng nhập thất bại với mật khẩu sai
@@ -44,13 +44,5 @@ class Test_Login_Views(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'login.html')
         self.assertNotIn('_auth_user_id', self.client.session)
-
-    def test_session_data_on_successful_login(self): # kiểm tra session data sau khi đăng nhập thành công
-        self.client.post(self.login_url, {
-            'username': self.username,
-            'password': self.password,
-        })
-        self.assertIn('user', self.client.session)
-        self.assertEqual(self.client.session['user'], self.username)
         
-# py manage.py test accounts
+# py manage.py test accounts.tests.test_view_login

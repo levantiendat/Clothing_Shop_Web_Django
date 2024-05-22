@@ -56,6 +56,7 @@ class CategoryListViewTest(TestCase):
             [category.pk for category in expected_categories]
         )
 
+# py manage.py test shop.tests.test_views_category.CategoryListViewTest
 class AddCategoryViewTest(TestCase):
     def setUp(self):
         # Tạo user và account tương ứng
@@ -129,6 +130,7 @@ class AddCategoryViewTest(TestCase):
         self.assertEqual(len(messages_list), 1)
         self.assertEqual(str(messages_list[0]), 'Thêm thất bại!')
 
+# py manage.py test shop.tests.test_views_category.AddCategoryViewTest
 class CategoryUpdateViewTest(TestCase):
     def setUp(self):
         # Tạo user và account tương ứng
@@ -171,7 +173,8 @@ class CategoryUpdateViewTest(TestCase):
         self.assertEqual(response.context['user'], self.account)
         self.assertIn('category', response.context)
         self.assertEqual(response.context['category'], self.category)
-        
+
+# py manage.py test shop.tests.test_views_category.CategoryUpdateViewTest
 class CategoryUpdateAcceptViewTest(TestCase):
     def setUp(self):
         # Tạo user và account tương ứng
@@ -265,7 +268,8 @@ class CategoryUpdateAcceptViewTest(TestCase):
             self.category.refresh_from_db()
             self.assertEqual(self.category.name, 'Test Category')
             self.assertEqual(self.category.decription, 'Test Description')
-        
+
+# py manage.py test shop.tests.test_views_category.CategoryUpdateAcceptViewTest
 class CategoryDeleteViewTest(TestCase):
 
     def setUp(self):
@@ -317,5 +321,6 @@ class CategoryDeleteViewTest(TestCase):
         self.assertFalse(Product.objects.filter(id=self.product.id).exists())
         self.assertFalse(Cart.objects.filter(id=self.cart.id).exists())
 
+# py manage.py test shop.tests.test_views_category.CategoryDeleteViewTest
 
-# py manage.py test shop
+# py manage.py test shop.tests.test_views_category

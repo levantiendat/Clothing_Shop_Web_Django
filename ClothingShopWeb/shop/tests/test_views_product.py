@@ -66,6 +66,7 @@ class ProductListViewTest(TestCase):
             formatted_price = "{:,.0f}".format(int(product.price))
             self.assertEqual(expected_products[i].price, formatted_price)
 
+# py manage.py test shop.tests.test_views_product.ProductListViewTest
 class ProductListCategoryViewTest(TestCase):
     def setUp(self):
         # Tạo user và account tương ứng
@@ -130,7 +131,8 @@ class ProductListCategoryViewTest(TestCase):
         for i, product in enumerate(actual_products):
             formatted_price = "{:,.0f}".format(int(product.price))
             self.assertEqual(expected_products[i].price, formatted_price)
-            
+
+# py manage.py test shop.tests.test_views_product.ProductListCategoryViewTest           
 class AddProductViewTest(TestCase):
 
     def setUp(self):
@@ -286,7 +288,8 @@ class AddProductViewTest(TestCase):
 
         # Kiểm tra sản phẩm không được tạo
         self.assertFalse(Product.objects.filter(price=100.0).exists())
- 
+
+# py manage.py test shop.tests.test_views_product.AddProductViewTest
 class ProductUpdateViewTest(TestCase):
     def setUp(self):
         # Tạo user và account tương ứng
@@ -334,6 +337,7 @@ class ProductUpdateViewTest(TestCase):
         self.assertEqual(response.context['product'], self.product)
         self.assertEqual(response.context['categories'][0], self.category)
 
+# py manage.py test shop.tests.test_views_product.ProductUpdateViewTest
 class ProductUpdateAcceptViewTest(TestCase):
     def setUp(self):
         # Tạo user và account tương ứng
@@ -509,7 +513,8 @@ class ProductUpdateAcceptViewTest(TestCase):
         self.product.refresh_from_db()
         self.assertNotEqual(self.product.stock_number, -20)
 
-class ProductDeleteTestCase(TestCase):
+# py manage.py test shop.tests.test_views_product.ProductUpdateAcceptViewTest
+class ProductDeleteViewTest(TestCase):
     # Tạo user và account tương ứng
     def setUp(self):
         self.username = 'testuser'
@@ -557,5 +562,7 @@ class ProductDeleteTestCase(TestCase):
         # Kiểm tra sản phẩm đã bị xóa
         self.assertFalse(Product.objects.filter(id=self.product.id).exists())
         self.assertFalse(Cart.objects.filter(id=self.cart.id).exists())
- 
-# py manage.py test shop
+
+# py manage.py test shop.tests.test_views_product.ProductDeleteViewTest
+
+# py manage.py test shop.tests.test_views_product
