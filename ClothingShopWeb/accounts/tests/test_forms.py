@@ -68,4 +68,4 @@ class FormTest(TestCase):
         self.assertEqual(user.username, 'testuser')
         self.assertEqual(user.email, 'test@example.com')
 
-# py manage.py test accounts
+# py manage.py test accounts.tests.test_forms

@@ -12,4 +12,4 @@ class TestAccountUrls(SimpleTestCase):
         url = reverse('login')
         self.assertEqual(resolve(url).func, user_login)
         
-# py manage.py test accounts
+# py manage.py test accounts.tests.test_urls

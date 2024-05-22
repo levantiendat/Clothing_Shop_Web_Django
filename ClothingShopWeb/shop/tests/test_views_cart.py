@@ -75,6 +75,7 @@ class HistoryListViewTest(TestCase):
         self.assertContains(response, '1,000')
         self.assertContains(response, '2,000')
 
+# py manage.py test shop.tests.test_views_cart.HistoryListViewTest
 class AddCartViewTest(TestCase):
     def setUp(self):
         # Tạo user và account tương ứng
@@ -164,6 +165,7 @@ class AddCartViewTest(TestCase):
         cart_items = Cart.objects.filter(user=self.user, product=self.product)
         self.assertEqual(cart_items.count(), 0)
 
+# py manage.py test shop.tests.test_views_cart.AddCartViewTest
 class CartListViewTest(TestCase):
     def setUp(self):
         # Tạo user và account tương ứng
@@ -203,7 +205,7 @@ class CartListViewTest(TestCase):
         
         response = self.client.get(self.cart_list_url)
         
-        # Kiên tra chuyển hướng đến trang giỏ hàng
+        # Kiểm tra chuyển hướng đến trang giỏ hàng
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'cart_list.html')
         self.assertIn('user', response.context)
@@ -232,6 +234,7 @@ class CartListViewTest(TestCase):
         self.assertEqual(len(response.context['carts']), 0)
         self.assertEqual(response.context['total_cart'], 0)
 
+# py manage.py test shop.tests.test_views_cart.CartListViewTest
 class CartUpdateViewTest(TestCase):
 
     def setUp(self):
@@ -270,7 +273,7 @@ class CartUpdateViewTest(TestCase):
         
         response = self.client.post(self.update_cart_url, {'cart_id': self.cart.id})
         
-        # Kiểm tra chuyển hướng đến trang cập nhật giỏ hàng
+        # Kiểm tra trả về trang cập nhật giỏ hàng
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'cart_update.html')
         self.assertIn('user', response.context)
@@ -282,6 +285,7 @@ class CartUpdateViewTest(TestCase):
         self.assertEqual(response.context['cart'], self.cart)
         self.assertEqual(response.context['product'], self.product)
 
+# py manage.py test shop.tests.test_views_cart.CartUpdateViewTest
 class UpdateCartProductViewTest(TestCase):
 
     def setUp(self):
@@ -350,7 +354,7 @@ class UpdateCartProductViewTest(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('cart_list'))
         
-        # Kiểm tra sản phẩm đã được xóa khỏi giỏ hàng
+        # Kiểm tra sản phẩm không có trong giỏ hàng
         with self.assertRaises(Cart.DoesNotExist):
             Cart.objects.get(pk=self.cart.id)
         
@@ -360,7 +364,7 @@ class UpdateCartProductViewTest(TestCase):
             'cart_new_count': -1
         })
         
-        # Kiểm tra sản phẩm đã được xóa khỏi giỏ hàng
+        # Kiểm tra chuyển hướng đến trang danh sách giỏ hàng
         self.assertEqual(response.status_code, 302)
         self.assertRedirects(response, reverse('cart_list'))
         
@@ -403,7 +407,11 @@ class UpdateCartProductViewTest(TestCase):
                 messages = list(get_messages(response.wsgi_request))
                 self.assertEqual(len(messages), 1)
                 self.assertEqual(str(messages[0]), 'Database error')
-      
+                
+                self.cart.refresh_from_db()
+                self.assertEqual(self.cart.count, 2)
+
+# py manage.py test shop.tests.test_views_cart.UpdateCartProductViewTest
 class CartProductDeleteViewTest(TestCase):
     
     def setUp(self):
@@ -469,7 +477,11 @@ class CartProductDeleteViewTest(TestCase):
                 messages = list(get_messages(response.wsgi_request))
                 self.assertEqual(len(messages), 1)
                 self.assertEqual(str(messages[0]), 'Database error')
+                # kiểm tra sản phẩm còn trong giỏ
+                self.cart.refresh_from_db()
+                self.assertEqual(self.cart.count, 2)
 
+# py manage.py test shop.tests.test_views_cart.CartProductDeleteViewTest
 class CheckoutCartViewTest(TestCase):
     def setUp(self):
         # Tạo user và account tương ứng
@@ -545,5 +557,7 @@ class CheckoutCartViewTest(TestCase):
                 messages = list(get_messages(response.wsgi_request))
                 self.assertEqual(len(messages), 1)
                 self.assertEqual(str(messages[0]), 'Thanh toán thất bại!')
-   
-# py manage.py test shop
+
+# py manage.py test shop.tests.test_views_cart.CheckoutCartViewTest
+
+# py manage.py test shop.tests.test_views_cart

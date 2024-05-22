@@ -26,4 +26,4 @@ class TestAccountModel(TestCase):
         self.assertEqual(self.account.user, self.user)
         self.assertEqual(self.user.account, self.account)  # Xác thực ngược lại
         
-# py manage.py test accounts
+# py manage.py test accounts.tests.test_models

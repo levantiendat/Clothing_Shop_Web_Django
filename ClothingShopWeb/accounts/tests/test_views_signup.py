@@ -246,4 +246,4 @@ class Test_Signup_Views(TestCase):
         self.assertEqual(response1.status_code, 200)
         self.assertTemplateUsed(response1, 'signup.html')
 
-# py manage.py test accounts
+# py manage.py test accounts.tests.test_views_signup

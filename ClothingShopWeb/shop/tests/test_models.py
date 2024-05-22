@@ -64,4 +64,4 @@ class TestShopModels(TestCase):
        
         self.assertEqual(self.history.user, self.user)
  
-# py manage.py test shop
+# py manage.py test shop.tests.test_models
